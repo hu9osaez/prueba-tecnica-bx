@@ -7,7 +7,12 @@ import { RickAndMortyClient, PokemonClient, SuperheroClient } from './clients';
 
 @Module({
   imports: [HttpModule, ConfigModule],
-  providers: [ExternalService, RickAndMortyClient, PokemonClient, SuperheroClient],
-  exports: [ExternalService],
+  providers: [
+    ExternalService,
+    RickAndMortyClient,
+    PokemonClient,
+    SuperheroClient,
+  ],
+  exports: [ExternalService, PokemonClient],
 })
 export class ExternalModule {}

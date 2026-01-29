@@ -154,4 +154,46 @@ export class CharactersService {
       throw error;
     }
   }
+
+  async findOrFetchByName(
+    name: string,
+    source: 'rick-morty' | 'pokemon' | 'superhero',
+  ): Promise<CharacterDocument | null> {
+    try {
+      const existing = await this.characterModel
+        .findOne({ name: { $regex: `^${name}$`, $options: 'i' } })
+        .exec();
+
+      if (existing) {
+        this.logger.log(`Character found in DB: ${existing.name}`);
+        return existing;
+      }
+
+      this.logger.log(
+        `Character "${name}" not found in DB, fetching from ${source} API`,
+      );
+
+      try {
+        const externalCharacter = await this.externalService.getCharacterByName(
+          name,
+          source,
+        );
+        return this.createOrUpdate(externalCharacter);
+      } catch (apiError) {
+        this.logger.warn(
+          `Failed to fetch character "${name}" from ${source} API`,
+          {
+            error: apiError.message,
+          },
+        );
+        return null;
+      }
+    } catch (error) {
+      this.logger.error('Error findOrFetchByName:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
+    }
+  }
 }

@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         background: "hsl(var(--background))",
@@ -41,12 +45,24 @@ const config: Config = {
           foreground: "hsl(var(--destructive-foreground))",
         },
         like: {
-          DEFAULT: "#22c55e",
-          hover: "#16a34a",
+          DEFAULT: "hsl(var(--like))",
+          hover: "hsl(var(--like-hover))",
         },
         dislike: {
-          DEFAULT: "#ef4444",
-          hover: "#dc2626",
+          DEFAULT: "hsl(var(--dislike))",
+          hover: "hsl(var(--dislike-hover))",
+        },
+        pokemon: {
+          DEFAULT: "hsl(var(--pokemon-bg))",
+          text: "hsl(var(--pokemon-text))",
+        },
+        rickmorty: {
+          DEFAULT: "hsl(var(--rickmorty-bg))",
+          text: "hsl(var(--rickmorty-text))",
+        },
+        superhero: {
+          DEFAULT: "hsl(var(--superhero-bg))",
+          text: "hsl(var(--superhero-text))",
         },
       },
       borderRadius: {
@@ -68,11 +84,16 @@ const config: Config = {
           "50%": { transform: "scale(0.95)" },
           "100%": { transform: "scale(1)" },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
+        },
       },
       animation: {
         "fade-out": "fade-out 300ms ease-out",
         "fade-in": "fade-in 300ms ease-in",
         "scale-down": "scale-down 200ms ease-out",
+        shimmer: "shimmer 1.5s infinite",
       },
     },
   },

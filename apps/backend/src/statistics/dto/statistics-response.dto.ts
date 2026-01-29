@@ -33,6 +33,7 @@ export class PikachuStatsResponseDto {
     name: string;
     source: string;
     exists: boolean;
+    imageUrl?: string;
   };
 
   statistics?: {

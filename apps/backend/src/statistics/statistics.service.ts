@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 
 import { Vote, VoteDocument } from '../votes/schemas';
 import { Character, CharacterDocument } from '../characters/schemas';
+import { CharactersService } from '../characters/characters.service';
 import { MostLikedResponseDto, PikachuStatsResponseDto } from './dto';
 
 @Injectable()
@@ -11,9 +12,10 @@ export class StatisticsService {
   private readonly logger = new Logger(StatisticsService.name);
 
   constructor(
-    @InjectModel(Vote.name) private voteModel: Model<VoteDocument>,
+    @InjectModel(Vote.name) private readonly voteModel: Model<VoteDocument>,
     @InjectModel(Character.name)
-    private characterModel: Model<CharacterDocument>,
+    private readonly characterModel: Model<CharacterDocument>,
+    private readonly charactersService: CharactersService,
   ) {}
 
   async getMostLiked(): Promise<MostLikedResponseDto | null> {
@@ -169,6 +171,11 @@ export class StatisticsService {
 
   async getPikachuStats(): Promise<PikachuStatsResponseDto> {
     try {
+      const character = await this.charactersService.findOrFetchByName(
+        'pikachu',
+        'pokemon',
+      );
+
       const votes = await this.voteModel
         .find({
           characterName: { $regex: /^pikachu$/, $options: 'i' },
@@ -180,7 +187,8 @@ export class StatisticsService {
           character: {
             name: 'Pikachu',
             source: 'pokemon',
-            exists: false,
+            exists: character !== null,
+            imageUrl: character?.imageUrl,
           },
         };
       }
@@ -196,6 +204,7 @@ export class StatisticsService {
           name: 'Pikachu',
           source: 'pokemon',
           exists: true,
+          imageUrl: character?.imageUrl,
         },
         statistics: {
           likes,

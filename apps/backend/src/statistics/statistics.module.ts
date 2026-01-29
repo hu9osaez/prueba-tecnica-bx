@@ -5,6 +5,7 @@ import { StatisticsController } from './statistics.controller';
 import { StatisticsService } from './statistics.service';
 import { Vote, VoteSchema } from '../votes/schemas';
 import { Character, CharacterSchema } from '../characters/schemas';
+import { CharactersModule } from '../characters/characters.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { Character, CharacterSchema } from '../characters/schemas';
       { name: Vote.name, schema: VoteSchema },
       { name: Character.name, schema: CharacterSchema },
     ]),
+    CharactersModule,
   ],
   controllers: [StatisticsController],
   providers: [StatisticsService],

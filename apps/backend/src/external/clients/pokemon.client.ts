@@ -40,8 +40,6 @@ export class PokemonClient {
 
   async getCharacterById(id: string): Promise<InternalCharacter> {
     try {
-      this.logger.log(`Fetching Pokemon ${id} from Pokemon API`);
-
       const { data } = await firstValueFrom(
         this.httpService.get<PokemonResponse>(`${this.baseUrl}/pokemon/${id}`, {
           timeout: this.timeout,
@@ -52,6 +50,26 @@ export class PokemonClient {
     } catch (error) {
       if (error instanceof AxiosError && error.response?.status === 404) {
         throw new CharacterNotFoundException('pokemon', id);
+      }
+      this.handleApiError(error);
+    }
+  }
+
+  async getCharacterByName(name: string): Promise<InternalCharacter> {
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.get<PokemonResponse>(
+          `${this.baseUrl}/pokemon/${name.toLowerCase()}`,
+          {
+            timeout: this.timeout,
+          },
+        ),
+      );
+
+      return this.toInternalCharacter(data);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        throw new CharacterNotFoundException('pokemon', name);
       }
       this.handleApiError(error);
     }

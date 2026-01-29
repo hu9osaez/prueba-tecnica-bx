@@ -24,6 +24,18 @@
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
     --radius: 0.5rem;
+
+    /* Semantic color tokens */
+    --like: 142 76% 36%;
+    --like-hover: 142 76% 28%;
+    --dislike: 0 72% 51%;
+    --dislike-hover: 0 72% 41%;
+    --pokemon-bg: 48 96% 53%;
+    --pokemon-text: 0 0% 9%;
+    --rickmorty-bg: 217 91% 60%;
+    --rickmorty-text: 0 0% 9%;
+    --superhero-bg: 271 81% 56%;
+    --superhero-text: 0 0% 98%;
   }
 
   .dark {
@@ -46,6 +58,18 @@
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
+
+    /* Semantic color tokens - dark mode */
+    --like: 142 70% 45%;
+    --like-hover: 142 70% 55%;
+    --dislike: 0 70% 45%;
+    --dislike-hover: 0 70% 55%;
+    --pokemon-bg: 48 80% 30%;
+    --pokemon-text: 0 0% 98%;
+    --rickmorty-bg: 217 80% 35%;
+    --rickmorty-text: 0 0% 98%;
+    --superhero-bg: 271 70% 35%;
+    --superhero-text: 0 0% 98%;
   }
 }
 
@@ -53,7 +77,144 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Typography improvements */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl font-bold leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl font-semibold leading-relaxed;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl font-medium leading-relaxed;
+  }
+
+  p {
+    @apply leading-relaxed text-base;
+  }
+
+  /* Improved focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-zinc-400 ring-offset-2 ring-offset-background dark:ring-zinc-500;
+  }
+}
+
+@layer utilities {
+  /* Semantic color utility classes */
+  .bg-like {
+    background-color: hsl(var(--like));
+  }
+  .bg-like:hover {
+    background-color: hsl(var(--like-hover));
+  }
+  .bg-dislike {
+    background-color: hsl(var(--dislike));
+  }
+  .bg-dislike:hover {
+    background-color: hsl(var(--dislike-hover));
+  }
+
+  /* Character source colors */
+  .bg-pokemon {
+    background-color: hsl(var(--pokemon-bg));
+    color: hsl(var(--pokemon-text));
+  }
+  .bg-rickmorty {
+    background-color: hsl(var(--rickmorty-bg));
+    color: hsl(var(--rickmorty-text));
+  }
+  .bg-superhero {
+    background-color: hsl(var(--superhero-bg));
+    color: hsl(var(--superhero-text));
+  }
+
+  /* Animation utilities */
+  .animate-scale-down {
+    animation: scaleDown 0.2s ease-out;
+  }
+
+  @keyframes scaleDown {
+    from {
+      transform: scale(1.05);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  /* Smooth transitions for all interactive elements */
+  button, a, [role="button"] {
+    @apply transition-all duration-200;
+  }
+
+  /* Card hover effects */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  /* Loading shimmer */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+}
+
+/* Kbd styling */
+kbd {
+  @apply inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold
+         bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300
+         border border-zinc-300 dark:border-zinc-700 rounded
+         shadow-sm;
+}
+
+/* Skip link styling */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
 }

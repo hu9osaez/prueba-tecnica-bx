@@ -5,6 +5,7 @@ import { Zap } from "lucide-react";
 import { PikachuStatsResponse } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StandardizedImage } from "@/components/standardized-image";
 
 interface PikachuStatsPanelProps {
   stats: PikachuStatsResponse | null;
@@ -37,6 +38,7 @@ export function PikachuStatsPanel({ stats, isLoading }: PikachuStatsPanelProps) 
 
   const exists = stats.character.exists;
   const hasStatistics = stats.statistics !== undefined;
+  const hasImage = exists && stats.character.imageUrl;
 
   return (
     <Card className="w-full max-w-md mx-auto mt-6">
@@ -48,22 +50,32 @@ export function PikachuStatsPanel({ stats, isLoading }: PikachuStatsPanelProps) 
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {/* Character Info */}
-          <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
-            <div>
+          {/* Character Info with Image */}
+          <div className="flex items-center gap-4 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+            {hasImage ? (
+              <StandardizedImage
+                src={stats.character.imageUrl!}
+                alt={stats.character.name}
+                width={80}
+                height={80}
+                className="flex-shrink-0"
+              />
+            ) : (
+              <div className="w-20 h-20 bg-yellow-200 dark:bg-yellow-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Zap className="w-10 h-10 text-yellow-600 dark:text-yellow-400" />
+              </div>
+            )}
+            <div className="flex-1">
               <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 {stats.character.name}
               </p>
-              <p className="text-xs text-zinc-500">
-                {stats.character.source}
-              </p>
+              <p className="text-xs text-zinc-500">{stats.character.source}</p>
+              <Badge variant={exists ? "default" : "secondary"} className="mt-1">
+                {exists ? "En DB" : "No existe"}
+              </Badge>
             </div>
-            <Badge variant={exists ? "default" : "secondary"}>
-              {exists ? "En DB" : "No existe"}
-            </Badge>
           </div>
 
-          {/* Statistics */}
           {hasStatistics ? (
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2">

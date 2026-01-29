@@ -93,6 +93,24 @@ export class ExternalService {
     return character;
   }
 
+  async getCharacterByName(
+    name: string,
+    source: 'rick-morty' | 'pokemon' | 'superhero',
+  ): Promise<InternalCharacter> {
+    this.logger.log(`Fetching character "${name}" from ${source}`);
+
+    const cacheKey = `${source}:name:${name.toLowerCase()}`;
+    const cached = this.getFromCache(cacheKey);
+    if (cached) {
+      this.logger.debug(`Cache hit for ${cacheKey}`);
+      return cached;
+    }
+
+    const character = await this.getFromSourceByName(source, name);
+    this.setCache(cacheKey, character);
+    return character;
+  }
+
   private getFromSource(
     source: 'rick-morty' | 'pokemon' | 'superhero',
   ): Promise<InternalCharacter> {
@@ -117,6 +135,24 @@ export class ExternalService {
         return this.pokemonClient.getCharacterById(id);
       case 'superhero':
         return this.superheroClient.getCharacterById(id);
+    }
+  }
+
+  private getFromSourceByName(
+    source: 'rick-morty' | 'pokemon' | 'superhero',
+    name: string,
+  ): Promise<InternalCharacter> {
+    switch (source) {
+      case 'rick-morty':
+        throw new Error(
+          'getCharacterByName not supported for rick-morty source yet',
+        );
+      case 'pokemon':
+        return this.pokemonClient.getCharacterByName(name);
+      case 'superhero':
+        throw new Error(
+          'getCharacterByName not supported for superhero source yet',
+        );
     }
   }
 

@@ -53,6 +53,7 @@ export interface PikachuStatsResponse {
     name: string;
     source: string;
     exists: boolean;
+    imageUrl?: string;
   };
   statistics?: {
     likes: number;
