@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Query } from '@nestjs/common';
 
 import { CharactersService } from './characters.service';
 import { GetRandomCharacterDto, CharacterResponse } from './dto';
@@ -16,7 +16,7 @@ export class CharactersController {
     );
 
     if (!character) {
-      throw new Error('No characters available');
+      throw new NotFoundException('No characters available');
     }
 
     return {
