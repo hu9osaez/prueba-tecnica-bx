@@ -4,6 +4,7 @@ import { Trophy, TrendingDown, Clock } from "lucide-react";
 
 import { Statistics } from "@/types";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { StatisticsSkeleton } from "@/components/skeletons";
 
 interface StatisticsPanelProps {
   statistics: Statistics | null;
@@ -12,20 +13,7 @@ interface StatisticsPanelProps {
 
 export function StatisticsPanel({ statistics, isLoading }: StatisticsPanelProps) {
   if (isLoading) {
-    return (
-      <Card className="w-full max-w-md mx-auto mt-8">
-        <CardHeader>
-          <CardTitle>Statistics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="h-16 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded" />
-            <div className="h-16 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded" />
-            <div className="h-16 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded" />
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <StatisticsSkeleton />;
   }
 
   return (

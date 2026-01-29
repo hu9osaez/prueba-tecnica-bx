@@ -185,6 +185,34 @@
       background-position: -200% 0;
     }
   }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+}
+
+/* Reduced motion support - WCAG 2.1 AA compliant */
+@media (prefers-reduced-motion: reduce) {
+  .shimmer,
+  .animate-pulse,
+  .animate-spin,
+  .animate-scale-down {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .shimmer {
+    background: hsl(var(--muted));
+  }
 }
 
 /* Kbd styling */

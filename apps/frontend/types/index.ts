@@ -76,3 +76,22 @@ export interface ApiError {
   message: string;
   statusCode?: number;
 }
+
+export type LoadingState = "idle" | "loading" | "success" | "error";
+
+export interface LoadingStatus {
+  isLoading: boolean;
+  error: string | null;
+  state: LoadingState;
+}
+
+export interface ToastState {
+  show: boolean;
+  voteType: "like" | "dislike";
+  characterName: string;
+}
+
+export interface TransitionState {
+  isTransitioning: boolean;
+  direction: "in" | "out" | null;
+}

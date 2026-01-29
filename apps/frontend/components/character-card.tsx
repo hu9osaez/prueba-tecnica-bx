@@ -4,6 +4,7 @@ import { Character } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StandardizedImage } from "@/components/standardized-image";
+import { CharacterCardSkeleton } from "@/components/skeletons";
 
 interface CharacterCardProps {
   character: Character | null;
@@ -24,14 +25,7 @@ const sourceLabels = {
 
 export function CharacterCard({ character, isLoading }: CharacterCardProps) {
   if (isLoading) {
-    return (
-      <Card className="w-full max-w-md mx-auto overflow-hidden">
-        <CardContent className="p-6">
-          <div className="w-full aspect-square bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-lg" />
-          <div className="mt-4 h-6 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded w-3/4 mx-auto" />
-        </CardContent>
-      </Card>
-    );
+    return <CharacterCardSkeleton />;
   }
 
   if (!character) {

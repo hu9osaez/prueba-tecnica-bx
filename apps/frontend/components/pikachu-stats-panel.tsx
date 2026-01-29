@@ -6,6 +6,7 @@ import { PikachuStatsResponse } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StandardizedImage } from "@/components/standardized-image";
+import { PikachuStatsSkeleton } from "@/components/skeletons";
 
 interface PikachuStatsPanelProps {
   stats: PikachuStatsResponse | null;
@@ -14,22 +15,7 @@ interface PikachuStatsPanelProps {
 
 export function PikachuStatsPanel({ stats, isLoading }: PikachuStatsPanelProps) {
   if (isLoading) {
-    return (
-      <Card className="w-full max-w-md mx-auto mt-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-yellow-500" />
-            Pikachu Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="h-12 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded" />
-            <div className="h-12 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded" />
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <PikachuStatsSkeleton />;
   }
 
   if (!stats) {
