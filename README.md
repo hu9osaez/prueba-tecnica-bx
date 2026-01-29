@@ -2,6 +2,10 @@
 
 Vota si te gustan o no los personajes de Rick and Morty, Pokémon, Superhéroes y Star Wars.
 
+## Vista Previa
+
+![Game HUD Preview](docs/preview.png)
+
 ## Requisitos Previos
 
 Necesitas tener instalado:
@@ -57,8 +61,8 @@ cp apps/frontend/.env.example apps/frontend/.env.local
 pnpm dev
 ```
 
-- Frontend: http://localhost:3001
-- Backend: http://localhost:3000
+- Frontend: <http://localhost:3001>
+- Backend: <http://localhost:3000>
 
 ## Estructura del Proyecto
 
@@ -99,16 +103,8 @@ pnpm test:cov:open
 ## Solución de Problemas
 
 **MongoDB no conecta**: Verifica que la connection string tenga el usuario y password correctos, y que el acceso IP esté configurado en Atlas.
-
 **Puerto 3000 ocupado**: Cambia el PORT en `apps/backend/.env`
-
-**Superhéroes no aparecen**: Necesitas un token de https://superheroapi.com/ (es gratis)
-
-## Documentación Adicional (PUNTOS EXTRA)
-
-- [Arquitectura de Solución](./docs/SOLUTION_ARCHITECTURE.md)
-- [Diagramas de Flujo](./docs/FLOW_DIAGRAMS.md)
-- [Cómo Funciona](./docs/HOW_IT_WORKS.md)
+**Superhéroes no aparecen**: Necesitas un token de <https://superheroapi.com/> (es gratis)
 
 ## Features Bonus
 
