@@ -69,14 +69,14 @@ export function VotingInterface() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-8">
+    <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
-          Character Voting
+        <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 hud-font-mono hud-text-glow">
+          &gt; CHARACTER_VOTING_SYSTEM_
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Vote for your favorite characters! (Press L for Like, D for Dislike)
+        <p className="text-zinc-600 dark:text-zinc-400 hud-font-mono text-sm">
+          [L] LIKE  |  [D] DISLIKE
         </p>
       </div>
 
@@ -84,32 +84,45 @@ export function VotingInterface() {
         <div
           role="alert"
           aria-live="assertive"
-          className="w-full max-w-md p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg flex items-center gap-3"
+          className="w-full max-w-4xl mx-auto p-4 bg-red-50 dark:bg-red-950/20 border-2 border-red-400 dark:border-red-600 hud-font-mono flex items-center gap-3 hud-border-tech"
         >
           <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" aria-hidden="true" />
           <p className="text-sm text-red-800 dark:text-red-200">
-            {session.error || voting.error || character.error}
+            ERROR: {session.error || voting.error || character.error}
           </p>
         </div>
       )}
 
-      <section aria-label="Character selection">
-        <div
-          className={`transition-all duration-300 ${isTransitioning ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+      {/* Horizontal Layout: Voting (Left) | Stats (Right) */}
+      <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto w-full">
+        {/* Left Panel: Voting Section */}
+        <section
+          aria-label="Character selection"
+          className="flex-1 lg:max-w-[65%] hud-panel hud-border-tech p-6"
         >
-          <CharacterCard character={character.character} isLoading={character.isLoading} />
-          {!character.isLoading && character.character && (
-            <div ref={votingButtonsRef}>
-              <VotingButtons onVote={handleVote} isLoading={voting.isVoting} />
-            </div>
-          )}
-        </div>
-      </section>
+          <div
+            className={`transition-all duration-300 ${isTransitioning ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+          >
+            <CharacterCard character={character.character} isLoading={character.isLoading} />
+            {!character.isLoading && character.character && (
+              <div ref={votingButtonsRef}>
+                <VotingButtons onVote={handleVote} isLoading={voting.isVoting} />
+              </div>
+            )}
+          </div>
+        </section>
 
-      <section aria-label="Statistics" aria-live="polite" aria-atomic="true">
-        <StatisticsPanel statistics={statistics.statistics} isLoading={statistics.isLoading} />
-        <PikachuStatsPanel stats={statistics.statistics?.pikachuStats ?? null} isLoading={statistics.isLoading} />
-      </section>
+        {/* Right Panel: Stats Section */}
+        <section
+          aria-label="Statistics"
+          aria-live="polite"
+          aria-atomic="true"
+          className="lg:max-w-[35%] hud-panel hud-border-tech p-6 space-y-4"
+        >
+          <StatisticsPanel statistics={statistics.statistics} isLoading={statistics.isLoading} />
+          <PikachuStatsPanel stats={statistics.statistics?.pikachuStats ?? null} isLoading={statistics.isLoading} />
+        </section>
+      </div>
 
       <VoteToast
         show={showToast}

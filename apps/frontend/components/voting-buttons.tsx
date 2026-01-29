@@ -12,46 +12,48 @@ interface VotingButtonsProps {
 export function VotingButtons({ onVote, isLoading }: VotingButtonsProps) {
   return (
     <div className="flex gap-4 justify-center mt-8" aria-busy={isLoading} aria-live="polite">
-      <Button
-        size="lg"
+      <button
         onClick={() => onVote("like")}
         disabled={isLoading}
-        className="bg-like hover:bg-like-hover text-white min-w-[140px] active:scale-95 shadow-md hover:shadow-lg disabled:opacity-70"
+        className="hud-button hud-font-mono flex items-center gap-2 min-w-[160px] justify-center"
         aria-label="Like this character (Press L)"
         title="Like this character (Press L)"
       >
         {isLoading ? (
-          <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden="true" />
+          <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
         ) : (
-          <ThumbsUp className="w-5 h-5 mr-2" aria-hidden="true" />
+          <ThumbsUp className="w-5 h-5" aria-hidden="true" />
         )}
-        Like
+        <span>LIKE</span>
         {!isLoading && (
-          <kbd className="ml-2 px-2 py-0.5 text-xs font-semibold bg-white/20 hover:bg-white/30 rounded border border-white/30">
+          <kbd className="px-2 py-0.5 text-xs font-bold bg-current/20 rounded border border-current">
             L
           </kbd>
         )}
-      </Button>
-      <Button
-        size="lg"
+      </button>
+      <button
         onClick={() => onVote("dislike")}
         disabled={isLoading}
-        className="bg-dislike hover:bg-dislike-hover text-white min-w-[140px] active:scale-95 shadow-md hover:shadow-lg disabled:opacity-70"
+        className="hud-button hud-font-mono flex items-center gap-2 min-w-[160px] justify-center"
+        style={{
+          borderColor: 'hsl(var(--hud-neon-magenta))',
+          color: 'hsl(var(--hud-neon-magenta))',
+        }}
         aria-label="Dislike this character (Press D)"
         title="Dislike this character (Press D)"
       >
         {isLoading ? (
-          <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden="true" />
+          <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
         ) : (
-          <ThumbsDown className="w-5 h-5 mr-2" aria-hidden="true" />
+          <ThumbsDown className="w-5 h-5" aria-hidden="true" />
         )}
-        Dislike
+        <span>DISLIKE</span>
         {!isLoading && (
-          <kbd className="ml-2 px-2 py-0.5 text-xs font-semibold bg-white/20 hover:bg-white/30 rounded border border-white/30">
+          <kbd className="px-2 py-0.5 text-xs font-bold bg-current/20 rounded border border-current">
             D
           </kbd>
         )}
-      </Button>
+      </button>
     </div>
   );
 }

@@ -14,7 +14,7 @@ export default function HomePage() {
         id="main-content"
         role="main"
         aria-label="Character voting interface"
-        className="min-h-screen bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900"
+        className="min-h-screen bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-[#0a0a0a] dark:to-[#0f0f0f]"
       >
         <div className="container mx-auto px-4 py-8 md:py-16">
           <VotingInterface />

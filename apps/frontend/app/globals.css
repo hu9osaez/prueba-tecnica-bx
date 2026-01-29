@@ -38,6 +38,19 @@
     --superhero-text: 0 0% 98%;
     --starwars-bg: 45 93% 47%;
     --starwars-text: 0 0% 9%;
+
+    /* Game HUD Theme - Light Mode */
+    --hud-bg: 0 0% 98%;
+    --hud-bg-secondary: 0 0% 95%;
+    --hud-border: 0 0% 85%;
+    --hud-neon-cyan: 180 100% 50%;
+    --hud-neon-magenta: 300 100% 50%;
+    --hud-neon-green: 142 76% 45%;
+    --hud-glow-cyan: 180 100% 50% / 0.3;
+    --hud-glow-magenta: 300 100% 50% / 0.3;
+    --hud-text-primary: 0 0% 10%;
+    --hud-text-secondary: 0 0% 40%;
+    --hud-tech-cut: 8px;
   }
 
   .dark {
@@ -74,6 +87,19 @@
     --superhero-text: 0 0% 98%;
     --starwars-bg: 45 80% 40%;
     --starwars-text: 0 0% 98%;
+
+    /* Game HUD Theme - Dark Mode (Default) */
+    --hud-bg: 220 20% 8%;
+    --hud-bg-secondary: 220 20% 12%;
+    --hud-border: 180 100% 50%;
+    --hud-neon-cyan: 180 100% 50%;
+    --hud-neon-magenta: 300 100% 50%;
+    --hud-neon-green: 142 76% 45%;
+    --hud-glow-cyan: 180 100% 50% / 0.4;
+    --hud-glow-magenta: 300 100% 50% / 0.4;
+    --hud-text-primary: 0 0% 98%;
+    --hud-text-secondary: 0 0% 60%;
+    --hud-tech-cut: 8px;
   }
 }
 
@@ -253,4 +279,256 @@ kbd {
   overflow: visible;
   clip: auto;
   white-space: normal;
+}
+
+/* ============================================
+   GAME HUD UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* HUD Panel Base Styles */
+  .hud-panel {
+    background: hsl(var(--hud-bg));
+    border: 1px solid hsl(var(--hud-border));
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  /* Tech Border with Cut Corners */
+  .hud-border-tech {
+    position: relative;
+    border: 2px solid hsl(var(--hud-neon-cyan));
+    clip-path: polygon(
+      var(--hud-tech-cut) 0,
+      100% 0,
+      100% calc(100% - var(--hud-tech-cut)),
+      calc(100% - var(--hud-tech-cut)) 100%,
+      0 100%,
+      0 var(--hud-tech-cut)
+    );
+  }
+
+  .hud-border-tech::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid hsl(var(--hud-neon-magenta));
+    clip-path: polygon(
+      calc(var(--hud-tech-cut) + 2px) 2px,
+      calc(100% - 2px) 2px,
+      calc(100% - 2px) calc(100% - var(--hud-tech-cut) - 2px),
+      calc(100% - var(--hud-tech-cut) - 2px) calc(100% - 2px),
+      2px calc(100% - 2px),
+      2px calc(var(--hud-tech-cut) + 2px)
+    );
+    pointer-events: none;
+  }
+
+  /* Neon Glow Effects */
+  .hud-glow-cyan {
+    box-shadow: 0 0 10px hsl(var(--hud-glow-cyan)),
+                0 0 20px hsl(var(--hud-glow-cyan)),
+                inset 0 0 10px hsl(var(--hud-glow-cyan));
+  }
+
+  .hud-glow-magenta {
+    box-shadow: 0 0 10px hsl(var(--hud-glow-magenta)),
+                0 0 20px hsl(var(--hud-glow-magenta)),
+                inset 0 0 10px hsl(var(--hud-glow-magenta));
+  }
+
+  .hud-glow-hover {
+    transition: all 0.3s ease;
+  }
+
+  .hud-glow-hover:hover {
+    box-shadow: 0 0 15px hsl(var(--hud-glow-cyan)),
+                0 0 30px hsl(var(--hud-glow-cyan));
+  }
+
+  /* HUD Typography */
+  .hud-font-mono {
+    font-family: 'Courier New', 'Fira Code', 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .hud-text-glow {
+    text-shadow: 0 0 10px hsl(var(--hud-glow-cyan)),
+                 0 0 20px hsl(var(--hud-glow-cyan));
+  }
+
+  /* HUD Button Styles */
+  .hud-button {
+    background: linear-gradient(135deg, hsl(var(--hud-bg-secondary)) 0%, hsl(var(--hud-bg)) 100%);
+    border: 2px solid hsl(var(--hud-neon-cyan));
+    color: hsl(var(--hud-neon-cyan));
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    clip-path: polygon(
+      10px 0,
+      100% 0,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%,
+      0 10px
+    );
+  }
+
+  .hud-button:hover {
+    background: hsl(var(--hud-neon-cyan));
+    color: hsl(var(--hud-bg));
+    box-shadow: 0 0 20px hsl(var(--hud-glow-cyan));
+    transform: translateY(-2px);
+  }
+
+  .hud-button:active {
+    transform: translateY(0);
+  }
+
+  .hud-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* HUD Power Bar (Progress Bar) */
+  .hud-power-bar {
+    position: relative;
+    height: 24px;
+    background: hsl(var(--hud-bg-secondary));
+    border: 1px solid hsl(var(--hud-border));
+    overflow: hidden;
+  }
+
+  .hud-power-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, hsl(var(--hud-neon-cyan)) 0%, hsl(var(--hud-neon-magenta)) 100%);
+    transition: width 0.5s ease;
+    position: relative;
+  }
+
+  .hud-power-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+    animation: hudShimmer 2s infinite;
+  }
+
+  @keyframes hudShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* HUD Stat Card */
+  .hud-stat-card {
+    background: hsl(var(--hud-bg-secondary));
+    border-left: 3px solid hsl(var(--hud-neon-cyan));
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .hud-stat-card:hover {
+    border-left-color: hsl(var(--hud-neon-magenta));
+    background: hsl(var(--hud-bg));
+    transform: translateX(4px);
+  }
+
+  /* HUD Leaderboard */
+  .hud-leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: hsl(var(--hud-bg-secondary));
+    border-bottom: 1px solid hsl(var(--hud-border));
+    transition: all 0.2s ease;
+  }
+
+  .hud-leaderboard-item:hover {
+    background: hsl(var(--hud-bg));
+    border-left-color: hsl(var(--hud-neon-cyan));
+    padding-left: 1rem;
+  }
+
+  /* HUD Scanline Effect */
+  .hud-scanlines {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hud-scanlines::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.1) 2px,
+      rgba(0, 0, 0, 0.1) 4px
+    );
+    pointer-events: none;
+  }
+
+  /* HUD Pulse Animation */
+  .hud-pulse {
+    animation: hudPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes hudPulse {
+    0%, 100% {
+      box-shadow: 0 0 10px hsl(var(--hud-glow-cyan));
+    }
+    50% {
+      box-shadow: 0 0 20px hsl(var(--hud-glow-cyan)),
+                  0 0 30px hsl(var(--hud-glow-cyan));
+    }
+  }
+
+  /* HUD Character Frame */
+  .hud-character-frame {
+    position: relative;
+    padding: 8px;
+    border: 2px solid hsl(var(--hud-neon-cyan));
+    clip-path: polygon(
+      15px 0,
+      100% 0,
+      100% calc(100% - 15px),
+      calc(100% - 15px) 100%,
+      0 100%,
+      0 15px
+    );
+    background: hsl(var(--hud-bg-secondary));
+  }
+
+  .hud-character-frame::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    border: 1px solid hsl(var(--hud-neon-magenta));
+    clip-path: polygon(
+      12px 0,
+      100% 0,
+      100% calc(100% - 12px),
+      calc(100% - 12px) 100%,
+      0 100%,
+      0 12px
+    );
+    pointer-events: none;
+  }
 }

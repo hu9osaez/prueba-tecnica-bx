@@ -27,7 +27,8 @@ export function VoteToast({ show, voteType, characterName, onUndo, onDismiss }: 
 
   if (!show) return null;
 
-  const bgColor = voteType === "like" ? "bg-green-500" : "bg-red-500";
+  const accentColor = voteType === "like" ? "hsl(var(--hud-neon-green))" : "hsl(var(--hud-neon-magenta))";
+  const borderColor = voteType === "like" ? "hsl(var(--hud-neon-cyan))" : "hsl(var(--hud-neon-magenta))";
 
   return (
     <div
@@ -35,13 +36,18 @@ export function VoteToast({ show, voteType, characterName, onUndo, onDismiss }: 
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
       }`}
     >
-      <div className={`${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4`}>
-        <Check className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+      <div
+        className="hud-panel hud-border-tech hud-glow-cyan px-6 py-4 flex items-center gap-4"
+        style={{ borderColor, minWidth: '400px' }}
+      >
+        <Check className="w-5 h-5 flex-shrink-0" style={{ color: accentColor }} aria-hidden="true" />
         <div className="flex-1">
-          <p className="font-medium">
-            {voteType === "like" ? "Liked" : "Disliked"} <span className="font-bold">{characterName}</span>
+          <p className="font-medium hud-font-mono text-sm">
+            [{voteType === "like" ? "LIKE" : "DISLIKE"}] <span className="font-bold text-cyan-400">{characterName.toUpperCase()}</span>
           </p>
-          <p className="text-sm opacity-90">Vote recorded successfully</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 hud-font-mono">
+            &gt; VOTE_RECORDED_SUCCESSFULLY
+          </p>
         </div>
         <button
           onClick={() => {
@@ -49,11 +55,11 @@ export function VoteToast({ show, voteType, characterName, onUndo, onDismiss }: 
             setIsVisible(false);
             setTimeout(onDismiss, 300);
           }}
-          className="flex items-center gap-2 px-3 py-2 bg-white/20 hover:bg-white/30 rounded transition-colors text-sm font-medium"
+          className="hud-button hud-font-mono flex items-center gap-2 px-3 py-2 text-xs"
           aria-label="Undo vote"
         >
           <Undo2 className="w-4 h-4" aria-hidden="true" />
-          Undo
+          UNDO
         </button>
       </div>
     </div>

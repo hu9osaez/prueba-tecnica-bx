@@ -17,60 +17,80 @@ export function StatisticsPanel({ statistics, isLoading }: StatisticsPanelProps)
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto mt-8">
-      <CardHeader>
-        <CardTitle>Statistics</CardTitle>
+    <Card className="w-full hud-panel hud-scanlines">
+      <CardHeader className="pb-4">
+        <CardTitle className="hud-font-mono hud-text-glow text-cyan-400">
+          &gt; STATISTICS_MODULE_
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
-            <Trophy className="w-5 h-5 text-green-600 dark:text-green-400" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Most Liked</p>
-              {statistics?.mostLiked ? (
-                <>
-                  <p className="text-lg font-bold">{statistics.mostLiked.character.name}</p>
-                  <Badge variant="secondary" className="text-green-600 dark:text-green-400">
-                    {statistics.mostLiked.likes} likes
-                  </Badge>
-                </>
-              ) : (
-                <p className="text-sm text-zinc-500">No data yet</p>
-              )}
+        <div className="space-y-3">
+          <div className="hud-stat-card">
+            <div className="flex items-center gap-3">
+              <Trophy className="w-5 h-5 text-green-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 hud-font-mono">
+                  [MOST_LIKED]
+                </p>
+                {statistics?.mostLiked ? (
+                  <>
+                    <p className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate hud-font-mono">
+                      {statistics.mostLiked.character.name.toUpperCase()}
+                    </p>
+                    <p className="text-sm font-bold text-green-400 hud-font-mono">
+                      +{statistics.mostLiked.likes} VOTES
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-zinc-500 hud-font-mono">NO_DATA</p>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-950/20 rounded-lg">
-            <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Most Disliked</p>
-              {statistics?.mostDisliked ? (
-                <>
-                  <p className="text-lg font-bold">{statistics.mostDisliked.character.name}</p>
-                  <Badge variant="secondary" className="text-red-600 dark:text-red-400">
-                    {statistics.mostDisliked.dislikes} dislikes
-                  </Badge>
-                </>
-              ) : (
-                <p className="text-sm text-zinc-500">No data yet</p>
-              )}
+          <div className="hud-stat-card" style={{ borderLeftColor: 'hsl(var(--hud-neon-magenta))' }}>
+            <div className="flex items-center gap-3">
+              <TrendingDown className="w-5 h-5 text-red-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 hud-font-mono">
+                  [MOST_DISLIKED]
+                </p>
+                {statistics?.mostDisliked ? (
+                  <>
+                    <p className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate hud-font-mono">
+                      {statistics.mostDisliked.character.name.toUpperCase()}
+                    </p>
+                    <p className="text-sm font-bold text-red-400 hud-font-mono">
+                      -{statistics.mostDisliked.dislikes} VOTES
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-zinc-500 hud-font-mono">NO_DATA</p>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg">
-            <Clock className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Last Evaluated</p>
-              {statistics?.lastEvaluated ? (
-                <>
-                  <p className="text-lg font-bold">{statistics.lastEvaluated.vote.character.name}</p>
-                  <p className="text-xs text-zinc-500">
-                    {new Date(statistics.lastEvaluated.vote.votedAt).toLocaleString()}
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-zinc-500">No data yet</p>
-              )}
+          <div className="hud-stat-card" style={{ borderLeftColor: 'hsl(var(--hud-text-secondary))' }}>
+            <div className="flex items-center gap-3">
+              <Clock className="w-5 h-5 text-zinc-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 hud-font-mono">
+                  [LAST_VOTE]
+                </p>
+                {statistics?.lastEvaluated ? (
+                  <>
+                    <p className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate hud-font-mono">
+                      {statistics.lastEvaluated.vote.character.name.toUpperCase()}
+                    </p>
+                    <p className="text-xs text-zinc-500 hud-font-mono">
+                      {new Date(statistics.lastEvaluated.vote.votedAt).toLocaleString()}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-zinc-500 hud-font-mono">NO_DATA</p>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -59,24 +59,26 @@ export function CharacterCard({ character, isLoading }: CharacterCardProps) {
   const imageSource = character?.image || displayedCharacter.image;
 
   return (
-    <Card className="w-full max-w-md mx-auto overflow-hidden card-hover">
+    <Card className="w-full overflow-hidden hud-panel hud-border-tech hud-scanlines">
       <CardContent className="p-6">
         <div className="flex justify-center">
-          <StandardizedImage
-            src={imageSource}
-            alt={displayedCharacter.name}
-            width={300}
-            height={300}
-            className="rounded-lg shadow-md"
-            onLoadingComplete={handleImageLoad}
-          />
+          <div className="hud-character-frame">
+            <StandardizedImage
+              src={imageSource}
+              alt={displayedCharacter.name}
+              width={300}
+              height={300}
+              className="rounded-none"
+              onLoadingComplete={handleImageLoad}
+            />
+          </div>
         </div>
-        <div className="mt-5 text-center">
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
-            {displayedCharacter.name}
+        <div className="mt-6 text-center">
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight hud-font-mono hud-text-glow">
+            {displayedCharacter.name.toUpperCase()}
           </h2>
-          <Badge className={`mt-3 px-3 py-1 font-medium ${sourceBadgeClasses[displayedCharacter.source]}`}>
-            {sourceLabels[displayedCharacter.source]}
+          <Badge className={`mt-4 px-4 py-2 font-bold hud-font-mono ${sourceBadgeClasses[displayedCharacter.source]} border-2 border-current`}>
+            [{sourceLabels[displayedCharacter.source].toUpperCase()}]
           </Badge>
         </div>
       </CardContent>
