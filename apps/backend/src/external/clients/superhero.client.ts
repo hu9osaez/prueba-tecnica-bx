@@ -12,6 +12,7 @@ import {
 } from '../../common/exceptions';
 
 const SUPERHERO_COUNT = 731;
+const TOKEN_REDACTED = '[REDACTED]';
 
 @Injectable()
 export class SuperheroClient {
@@ -57,13 +58,10 @@ export class SuperheroClient {
       this.logger.log(`Fetching superhero ${id} from Superhero API`);
 
       const { data } = await firstValueFrom(
-        this.httpService.get<SuperheroResponse>(
-          `${this.baseUrl}/${this.token}/${id}`,
-          {
-            timeout: this.timeout,
-            maxRedirects: 5,
-          },
-        ),
+        this.httpService.get<SuperheroResponse>(this.buildUrl(id), {
+          timeout: this.timeout,
+          maxRedirects: 5,
+        }),
       );
 
       return this.toInternalCharacter(data);
@@ -73,6 +71,10 @@ export class SuperheroClient {
       }
       this.handleApiError(error);
     }
+  }
+
+  private buildUrl(id: string): string {
+    return `${this.baseUrl}/${this.token}/${id}`;
   }
 
   private toInternalCharacter(data: SuperheroResponse): InternalCharacter {
@@ -97,14 +99,16 @@ export class SuperheroClient {
           message?: string;
         };
         const message = data.message || data.error || 'Unknown error';
-        this.logger.error(`Superhero API error: ${status} - ${message}`);
+        this.logger.error(
+          `Superhero API error: ${status} - ${message} (URL: ${this.baseUrl}/${TOKEN_REDACTED})`,
+        );
         if (status === 401) {
           throw new SuperheroApiException('Invalid API token');
         }
         throw new SuperheroApiException(message, status);
       }
     }
-    this.logger.error('Unknown error calling Superhero API', { error });
+    this.logger.error('Unknown error calling Superhero API');
     throw new SuperheroApiException('Unexpected error occurred');
   }
 }

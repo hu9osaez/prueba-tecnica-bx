@@ -1,8 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters';
+import {
+  LoggingInterceptor,
+  ResponseSanitizerInterceptor,
+} from './common/interceptors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,10 +22,11 @@ async function bootstrap() {
   // Set API prefix
   app.setGlobalPrefix(apiPrefix);
 
-  // Enable CORS
+  app.use(helmet());
+
   app.enableCors({
     origin: corsOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
@@ -40,10 +46,16 @@ async function bootstrap() {
   // Global exception filter
   app.useGlobalFilters(new HttpExceptionFilter());
 
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    new ResponseSanitizerInterceptor(),
+  );
+
   await app.listen(port);
   console.log(`Server running on: http://localhost:${port}`);
   console.log(`Health Check: http://localhost:${port}/${apiPrefix}/health`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log('Security: Helmet enabled, CORS configured, Interceptors active');
 }
 
-bootstrap();
+void bootstrap();
