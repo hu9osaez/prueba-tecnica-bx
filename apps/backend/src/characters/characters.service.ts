@@ -1,14 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Character, CharacterDocument } from './schemas';
 import { ExternalService } from '../external/external.service';
+import { SessionsService } from '../sessions/sessions.service';
 
 export interface ExternalCharacter {
   externalId: string;
   name: string;
-  source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars' | 'star-wars';
+  source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars';
   imageUrl: string;
 }
 
@@ -22,6 +23,7 @@ export class CharactersService {
     @InjectModel(Character.name)
     private characterModel: Model<CharacterDocument>,
     private readonly externalService: ExternalService,
+    private readonly sessionsService: SessionsService,
   ) {}
 
   async createOrUpdate(
@@ -78,12 +80,25 @@ export class CharactersService {
   async getRandomCharacter(
     source?: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
     excludeIds?: string[],
+    sessionId?: string,
   ): Promise<CharacterDocument | null> {
     try {
       const query: Record<string, unknown> = source ? { source } : {};
 
-      if (excludeIds && excludeIds.length > 0) {
-        query._id = { $nin: excludeIds };
+      // Get voted IDs from session if sessionId provided
+      let sessionIds: Types.ObjectId[] = [];
+      if (sessionId) {
+        sessionIds = await this.sessionsService.getVotedIds(sessionId);
+      }
+
+      // Combine both exclusion lists
+      const allExcludeIds: string[] = [...(excludeIds || [])];
+      if (sessionIds.length > 0) {
+        allExcludeIds.push(...sessionIds.map((id) => id.toString()));
+      }
+
+      if (allExcludeIds.length > 0) {
+        query._id = { $nin: allExcludeIds };
       }
 
       const count = await this.characterModel.countDocuments(query);
@@ -96,16 +111,16 @@ export class CharactersService {
 
       if (shouldFetchFromExternal) {
         this.logger.log(
-          `Fetching from external API (count: ${count}, source: ${source || 'any'}, excluded: ${excludeIds?.length || 0})`,
+          `Fetching from external API (count: ${count}, source: ${source || 'any'}, excluded: ${allExcludeIds.length})`,
         );
         const externalCharacter =
           await this.externalService.getRandomCharacter(source);
 
-        if (excludeIds && excludeIds.length > 0) {
+        if (allExcludeIds.length > 0) {
           const existing = await this.characterModel.findOne({
             externalId: externalCharacter.externalId,
             source: externalCharacter.source,
-            _id: { $nin: excludeIds },
+            _id: { $nin: allExcludeIds },
           });
           if (existing) {
             return existing;

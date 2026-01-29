@@ -5,6 +5,7 @@ import { CharactersController } from './characters.controller';
 import { CharactersService } from './characters.service';
 import { Character, CharacterSchema } from './schemas';
 import { ExternalModule } from '../external/external.module';
+import { SessionsModule } from '../sessions/sessions.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ExternalModule } from '../external/external.module';
       { name: Character.name, schema: CharacterSchema },
     ]),
     ExternalModule,
+    SessionsModule,
   ],
   controllers: [CharactersController],
   providers: [CharactersService],

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AlertCircle } from "lucide-react";
 
-import { useVoting, useCharacterFetching, useStatistics, useKeyboardShortcuts } from "@/hooks";
+import { useVoting, useCharacterFetching, useStatistics, useKeyboardShortcuts, useSession } from "@/hooks";
 import { clearLastVote } from "@/lib/storage";
 import { CharacterCard } from "@/components/character-card";
 import { StatisticsPanel } from "@/components/statistics-panel";
@@ -12,6 +12,7 @@ import { VotingButtons } from "@/components/voting-buttons";
 import { VoteToast } from "@/components/vote-toast";
 
 export function VotingInterface() {
+  const session = useSession();
   const character = useCharacterFetching();
   const statistics = useStatistics();
   const voting = useVoting();
@@ -22,12 +23,12 @@ export function VotingInterface() {
   const [toastCharacterName, setToastCharacterName] = useState("");
   const votingButtonsRef = useRef<HTMLDivElement>(null);
 
-  const isLoading = character.isLoading || statistics.isLoading;
+  const isLoading = session.isLoading || character.isLoading || statistics.isLoading;
 
   useKeyboardShortcuts({
     onLike: () => handleVote("like"),
     onDislike: () => handleVote("dislike"),
-    isEnabled: !voting.isVoting && !isTransitioning && !!character.character,
+    isEnabled: !voting.isVoting && !isTransitioning && !!character.character && !!session.sessionId,
   });
 
   useEffect(() => {
@@ -37,10 +38,10 @@ export function VotingInterface() {
   }, [isTransitioning, isLoading, character.character]);
 
   const handleVote = useCallback(async (voteType: "like" | "dislike") => {
-    if (!character.character || voting.isVoting) return;
+    if (!character.character || voting.isVoting || !session.sessionId) return;
 
     try {
-      await voting.handleVote(voteType, character.character);
+      await voting.handleVote(voteType, character.character, session.sessionId);
 
       // Show toast notification
       setToastVoteType(voteType);
@@ -60,7 +61,7 @@ export function VotingInterface() {
     } catch {
       // Error handled by useVoting hook
     }
-  }, [character, statistics, voting]);
+  }, [character, statistics, voting, session]);
 
   const handleUndo = useCallback(() => {
     clearLastVote();
@@ -79,7 +80,7 @@ export function VotingInterface() {
         </p>
       </div>
 
-      {(voting.error || character.error) && (
+      {(session.error || voting.error || character.error) && (
         <div
           role="alert"
           aria-live="assertive"
@@ -87,7 +88,7 @@ export function VotingInterface() {
         >
           <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" aria-hidden="true" />
           <p className="text-sm text-red-800 dark:text-red-200">
-            {voting.error || character.error}
+            {session.error || voting.error || character.error}
           </p>
         </div>
       )}

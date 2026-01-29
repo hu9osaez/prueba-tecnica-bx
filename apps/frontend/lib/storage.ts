@@ -1,28 +1,55 @@
-// LocalStorage keys for tracking voted characters
-const VOTED_CHARACTER_IDS_KEY = "voted_character_ids";
+// LocalStorage keys for tracking voting session
+const SESSION_ID_KEY = "voting_session_id";
+const SESSION_EXPIRES_KEY = "voting_session_expires";
 const LAST_VOTE_KEY = "last_vote";
 
-export function getVotedCharacterIds(): string[] {
-  if (typeof window === "undefined") return [];
+export function getSessionId(): string | null {
+  if (typeof window === "undefined") return null;
   try {
-    const stored = localStorage.getItem(VOTED_CHARACTER_IDS_KEY);
-    return stored ? JSON.parse(stored) : [];
+    const sessionId = localStorage.getItem(SESSION_ID_KEY);
+    const expires = localStorage.getItem(SESSION_EXPIRES_KEY);
+
+    if (!sessionId || !expires) return null;
+
+    // Check if session is expired
+    if (Date.now() > parseInt(expires, 10)) {
+      clearSession();
+      return null;
+    }
+
+    return sessionId;
   } catch {
-    return [];
+    return null;
   }
 }
 
-export function saveVotedCharacterId(characterId: string): void {
+export function saveSessionId(sessionId: string, expiresAt: string): void {
   if (typeof window === "undefined") return;
   try {
-    const ids = getVotedCharacterIds();
-    if (!ids.includes(characterId)) {
-      ids.push(characterId);
-      localStorage.setItem(VOTED_CHARACTER_IDS_KEY, JSON.stringify(ids));
-    }
+    localStorage.setItem(SESSION_ID_KEY, sessionId);
+    localStorage.setItem(SESSION_EXPIRES_KEY, new Date(expiresAt).getTime().toString());
   } catch (error) {
-    console.error("Failed to save voted character ID:", error);
+    console.error("Failed to save session ID:", error);
   }
+}
+
+export function clearSession(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(SESSION_ID_KEY);
+    localStorage.removeItem(SESSION_EXPIRES_KEY);
+  } catch (error) {
+    console.error("Failed to clear session:", error);
+  }
+}
+
+// Deprecated: Kept for backward compatibility
+export function getVotedCharacterIds(): string[] {
+  return [];
+}
+
+export function saveVotedCharacterId(_characterId: string): void {
+  // No-op: session handles this now
 }
 
 export interface LastVote {

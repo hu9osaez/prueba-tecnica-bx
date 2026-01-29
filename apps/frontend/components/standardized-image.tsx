@@ -9,6 +9,7 @@ interface StandardizedImageProps {
   width?: number;
   height?: number;
   className?: string;
+  onLoadingComplete?: () => void;
 }
 
 export function StandardizedImage({
@@ -17,6 +18,7 @@ export function StandardizedImage({
   width = 300,
   height = 300,
   className = "",
+  onLoadingComplete,
 }: StandardizedImageProps) {
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,7 +70,10 @@ export function StandardizedImage({
           setImageError(true);
           setIsLoading(false);
         }}
-        onLoad={() => setIsLoading(false)}
+        onLoad={() => {
+          setIsLoading(false);
+          onLoadingComplete?.();
+        }}
         priority
       />
     </div>

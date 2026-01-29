@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 
 import { Vote, VoteDocument } from './schemas';
 import { CharactersService } from '../characters/characters.service';
+import { SessionsService } from '../sessions/sessions.service';
 
 @Injectable()
 export class VotesService {
@@ -12,11 +13,13 @@ export class VotesService {
   constructor(
     @InjectModel(Vote.name) private voteModel: Model<VoteDocument>,
     private charactersService: CharactersService,
+    private sessionsService: SessionsService,
   ) {}
 
   async create(
     characterId: string,
     voteType: 'like' | 'dislike',
+    sessionId?: string,
   ): Promise<VoteDocument> {
     try {
       const character = await this.charactersService.findById(characterId);
@@ -33,6 +36,11 @@ export class VotesService {
       });
 
       const saved = await vote.save();
+
+      if (sessionId) {
+        await this.sessionsService.addVotedCharacter(sessionId, characterId);
+      }
+
       this.logger.log(`Vote created: ${voteType} for ${character.name}`);
       return saved;
     } catch (error) {

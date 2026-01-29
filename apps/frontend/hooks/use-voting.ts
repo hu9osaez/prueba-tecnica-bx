@@ -3,13 +3,13 @@
 import { useState, useCallback } from "react";
 
 import { api } from "@/lib/api";
-import { saveVotedCharacterId, saveLastVote, LastVote } from "@/lib/storage";
+import { saveLastVote, LastVote } from "@/lib/storage";
 import { Character } from "@/types";
 
 export interface UseVotingReturn {
   isVoting: boolean;
   error: string | null;
-  handleVote: (voteType: "like" | "dislike", character: Character) => Promise<void>;
+  handleVote: (voteType: "like" | "dislike", character: Character, sessionId?: string | null) => Promise<void>;
   clearError: () => void;
 }
 
@@ -18,21 +18,19 @@ export function useVoting(): UseVotingReturn {
   const [error, setError] = useState<string | null>(null);
 
   const handleVote = useCallback(
-    async (voteType: "like" | "dislike", character: Character) => {
+    async (voteType: "like" | "dislike", character: Character, sessionId?: string | null) => {
       if (!character) return;
 
       setIsVoting(true);
       setError(null);
 
       try {
-        // Submit vote
+        // Submit vote with sessionId
         await api.votes.submit({
           characterId: character.id,
           voteType,
+          sessionId: sessionId || undefined,
         });
-
-        // Save voted character ID to localStorage
-        saveVotedCharacterId(character.id);
 
         // Save last vote for undo functionality
         const lastVote: LastVote = {

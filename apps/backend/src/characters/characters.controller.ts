@@ -14,6 +14,7 @@ export class CharactersController {
     const character = await this.charactersService.getRandomCharacter(
       query.source,
       query.getExcludeIdsArray(),
+      query.sessionId,
     );
 
     if (!character) {

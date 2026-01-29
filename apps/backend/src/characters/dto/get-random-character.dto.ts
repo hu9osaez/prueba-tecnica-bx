@@ -7,6 +7,10 @@ export class GetRandomCharacterDto {
 
   @IsString()
   @IsOptional()
+  sessionId?: string;
+
+  @IsString()
+  @IsOptional()
   excludeIds?: string;
 
   getExcludeIdsArray(): string[] {

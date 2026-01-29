@@ -8,6 +8,7 @@ import { CharactersModule } from './characters/characters.module';
 import { VotesModule } from './votes/votes.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { HealthModule } from './health/health.module';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { HealthModule } from './health/health.module';
     VotesModule,
     StatisticsModule,
     HealthModule,
+    SessionsModule,
   ],
   controllers: [],
   providers: [],

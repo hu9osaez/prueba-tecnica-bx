@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateVoteDto {
   @IsString()
@@ -7,6 +7,10 @@ export class CreateVoteDto {
 
   @IsEnum(['like', 'dislike'])
   voteType: 'like' | 'dislike';
+
+  @IsString()
+  @IsOptional()
+  sessionId?: string;
 }
 
 export class CreateManualVoteDto {

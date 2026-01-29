@@ -9,7 +9,7 @@ import {
   VoteResponse,
 } from "@/types";
 import { buildUrl } from "./utils";
-import { getVotedCharacterIds } from "./storage";
+import { getSessionId } from "./storage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -19,6 +19,11 @@ interface BackendCharacter {
   name: string;
   source: "rick-morty" | "pokemon" | "superhero" | "star-wars";
   imageUrl: string;
+}
+
+interface SessionResponse {
+  sessionId: string;
+  expiresAt: string;
 }
 
 class ApiError extends Error {
@@ -58,20 +63,34 @@ function transformCharacter(backend: BackendCharacter): Character {
   return {
     id: backend.id,
     name: backend.name,
-    image: backend.imageUrl, // Map imageUrl -> image
+    image: backend.imageUrl,
     source:
       backend.source === "rick-morty"
         ? "rick-and-morty"
-        : backend.source, // Map rick-morty -> rick-and-morty
+        : backend.source,
   };
 }
 
 export const api = {
+  sessions: {
+    create: async (): Promise<SessionResponse> => {
+      return fetcher<SessionResponse>("/sessions", {
+        method: "POST",
+      });
+    },
+
+    delete: async (sessionId: string): Promise<void> => {
+      await fetcher<void>(`/sessions/${sessionId}`, {
+        method: "DELETE",
+      });
+    },
+  },
+
   characters: {
     getRandom: async (): Promise<Character> => {
-      const excludeIds = getVotedCharacterIds();
+      const sessionId = getSessionId();
       const url = buildUrl("/characters/random", {
-        excludeIds: excludeIds.length > 0 ? excludeIds.join(',') : undefined,
+        sessionId: sessionId || undefined,
       });
       const backendChar = await fetcher<BackendCharacter>(url);
       return transformCharacter(backendChar);
@@ -79,7 +98,7 @@ export const api = {
   },
 
   votes: {
-    submit: (vote: Vote) =>
+    submit: (vote: Vote & { sessionId?: string }) =>
       fetcher<VoteResponse>("/votes", {
         method: "POST",
         body: JSON.stringify(vote),

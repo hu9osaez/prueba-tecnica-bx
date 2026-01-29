@@ -20,6 +20,7 @@ export class VotesController {
     return this.votesService.create(
       createVoteDto.characterId,
       createVoteDto.voteType,
+      createVoteDto.sessionId,
     );
   }
 

@@ -1,25 +1,28 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 
-import { StarWarsPersonResponse, StarWarsListResponse } from '../dto';
 import type { InternalCharacter } from '../interfaces';
 import {
   StarWarsApiException,
   CharacterNotFoundException,
 } from '../../common/exceptions';
 
-const STAR_WARS_IMAGE_BASE_URL =
-  'https://starwars-visualguide.com/assets/img/characters';
+interface StarWarsCharacter {
+  id: number;
+  name: string;
+  image: string;
+}
 
 @Injectable()
-export class StarWarsClient {
+export class StarWarsClient implements OnModuleInit {
   private readonly logger = new Logger(StarWarsClient.name);
   private readonly baseUrl: string;
   private readonly timeout: number;
-  private readonly totalCharacters: number;
+  private charactersCache: StarWarsCharacter[] = [];
+  private totalCharacters = 0;
 
   constructor(
     private readonly httpService: HttpService,
@@ -27,91 +30,84 @@ export class StarWarsClient {
   ) {
     this.baseUrl =
       this.configService.get<string>('STAR_WARS_API_URL') ??
-      'https://swapi.dev/api';
-    this.timeout = this.configService.get<number>('API_TIMEOUT_MS', 5000);
-    // SWAPI has approximately 82 characters
-    this.totalCharacters = 82;
+      'https://akabab.github.io/starwars-api/api';
+    this.timeout = this.configService.get<number>('API_TIMEOUT_MS', 10000);
+  }
+
+  async onModuleInit() {
+    await this.loadAllCharacters();
+  }
+
+  private async loadAllCharacters() {
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.get<StarWarsCharacter[]>(`${this.baseUrl}/all.json`, {
+          timeout: this.timeout,
+        }),
+      );
+
+      this.charactersCache = data;
+      this.totalCharacters = data.length;
+      this.logger.log(`Loaded ${this.totalCharacters} Star Wars characters`);
+    } catch (error) {
+      this.logger.error('Failed to load Star Wars characters', { error });
+    }
   }
 
   async getRandomCharacter(): Promise<InternalCharacter> {
-    try {
-      const randomId = Math.floor(Math.random() * this.totalCharacters) + 1;
-      return this.getCharacterById(randomId.toString());
-    } catch (error) {
-      this.handleApiError(error);
+    if (this.charactersCache.length === 0) {
+      await this.loadAllCharacters();
     }
+
+    if (this.charactersCache.length === 0) {
+      throw new StarWarsApiException('No characters available');
+    }
+
+    const randomIndex = Math.floor(Math.random() * this.totalCharacters);
+    const character = this.charactersCache[randomIndex];
+
+    return this.toInternalCharacter(character);
   }
 
   async getCharacterById(id: string): Promise<InternalCharacter> {
-    try {
-      const { data } = await firstValueFrom(
-        this.httpService.get<StarWarsPersonResponse>(
-          `${this.baseUrl}/people/${id}`,
-          {
-            timeout: this.timeout,
-          },
-        ),
-      );
-
-      return this.toInternalCharacter(data, id);
-    } catch (error) {
-      if (error instanceof AxiosError && error.response?.status === 404) {
-        throw new CharacterNotFoundException('star-wars', id);
-      }
-      this.handleApiError(error);
+    if (this.charactersCache.length === 0) {
+      await this.loadAllCharacters();
     }
+
+    const character = this.charactersCache.find(
+      (c) => c.id === parseInt(id, 10),
+    );
+
+    if (!character) {
+      throw new CharacterNotFoundException('star-wars', id);
+    }
+
+    return this.toInternalCharacter(character);
   }
 
   async getCharacterByName(name: string): Promise<InternalCharacter> {
-    try {
-      const { data } = await firstValueFrom(
-        this.httpService.get<StarWarsListResponse>(
-          `${this.baseUrl}/people/?search=${encodeURIComponent(name)}`,
-          {
-            timeout: this.timeout,
-          },
-        ),
-      );
-
-      if (!data.results || data.results.length === 0) {
-        throw new CharacterNotFoundException('star-wars', name);
-      }
-
-      // Extract ID from the URL of the first result
-      const firstResult = data.results[0];
-      const id = this.extractIdFromUrl(firstResult.url);
-
-      return this.toInternalCharacter(firstResult, id);
-    } catch (error) {
-      if (error instanceof CharacterNotFoundException) {
-        throw error;
-      }
-      if (error instanceof AxiosError && error.response?.status === 404) {
-        throw new CharacterNotFoundException('star-wars', name);
-      }
-      this.handleApiError(error);
+    if (this.charactersCache.length === 0) {
+      await this.loadAllCharacters();
     }
+
+    const character = this.charactersCache.find(
+      (c) => c.name.toLowerCase() === name.toLowerCase(),
+    );
+
+    if (!character) {
+      throw new CharacterNotFoundException('star-wars', name);
+    }
+
+    return this.toInternalCharacter(character);
   }
 
-  private toInternalCharacter(
-    data: StarWarsPersonResponse,
-    id: string,
-  ): InternalCharacter {
-    const imageUrl = `${STAR_WARS_IMAGE_BASE_URL}/${id}.jpg`;
-
+  private toInternalCharacter(data: StarWarsCharacter): InternalCharacter {
     return {
-      externalId: id,
+      externalId: data.id.toString(),
       name: data.name,
       source: 'star-wars',
-      imageUrl,
+      imageUrl: data.image,
     };
-  }
-
-  private extractIdFromUrl(url: string): string {
-    // SWAPI URLs are in the format: https://swapi.dev/api/people/1/
-    // Extract the ID from the URL
-    const matches = url.match(/people\/(\d+)\//);
-    return matches ? matches[1] : '1';
   }
 
   private handleApiError(error: unknown): never {

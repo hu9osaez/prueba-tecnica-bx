@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
       { hostname: "rickandmortyapi.com" },
       { hostname: "raw.githubusercontent.com" },
       { hostname: "www.superherodb.com" },
+      { hostname: "vignette.wikia.nocookie.net" },
       { hostname: "starwars-visualguide.com" },
     ],
   },
