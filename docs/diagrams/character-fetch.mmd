@@ -1,0 +1,21 @@
+flowchart TD
+    Start([GET /characters/random?sessionId=xxx]) --> Validate[Validar sessionId<br/>existe y no expiró]
+    Validate --> GetExclude[Obtener excludeIds de la sesión]
+    GetExclude --> SelectSource[Seleccionar fuente aleatoria<br/>R&M / Pokemon / Heroes / SW]
+    SelectSource --> CacheCheck{Está en cache?}
+
+    CacheCheck -->|Sí| ReturnCached[Retornar cache]
+    CacheCheck -->|No| FetchAPI[Fetch a API externa]
+
+    FetchAPI --> Success{Success?}
+    Success -->|Sí| SaveCache[Guardar en cache<br/>TTL: 1 hora]
+    Success -->|No| TryNext[Try siguiente fuente]
+    TryNext --> SelectSource
+
+    SaveCache --> Format[Format to standard]
+    Format --> Return[Return character]
+    ReturnCached --> Return
+
+    style Start fill:#e1f5e1
+    style Return fill:#e1f5e1
+    style Success fill:#fff4e1

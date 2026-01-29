@@ -1,0 +1,10 @@
+flowchart LR
+    User([Usuario clickea Like/Dislike]) --> POST[POST /votes]
+    POST --> Validate[Validar datos]
+    Validate --> Insert[Insert en MongoDB<br/>votes collection]
+    Insert --> Update[Update session<br/>$push to excludeIds]
+    Update --> Return[Return 201 Created]
+    Return --> Next[Frontend: Get next character]
+
+    style User fill:#e1f5e1
+    style Next fill:#e1f5e1

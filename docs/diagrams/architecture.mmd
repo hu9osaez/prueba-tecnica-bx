@@ -1,0 +1,31 @@
+flowchart TB
+    subgraph Frontend
+        FE[Frontend<br/>Next.js<br/>:3001]
+    end
+
+    subgraph Backend
+        API[API Gateway<br/>NestJS<br/>:3000]
+        SVC[Services Layer]
+        MDB[(MongoDB Atlas)]
+    end
+
+    subgraph External
+        API1[Rick & Morty API]
+        API2[Pokemon API]
+        API3[Superhero API]
+        API4[Star Wars API]
+    end
+
+    FE -->|HTTP| API
+    API --> SVC
+    SVC --> MDB
+
+    SVC -->|fetch| API1
+    SVC -->|fetch| API2
+    SVC -->|fetch| API3
+    SVC -->|fetch| API4
+
+    style FE fill:#bae6fd
+    style API fill:#fecaca
+    style SVC fill:#fde68a
+    style MDB fill:#86efac

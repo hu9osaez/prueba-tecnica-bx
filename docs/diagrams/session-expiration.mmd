@@ -1,0 +1,29 @@
+flowchart TD
+    Create([Sesión creada]) --> SetExp[Set expiresAt = now + 1 hour]
+    SetExp --> Use[Sesión usada para fetching/voting]
+    Use --> Check{Current time > expiresAt?}
+
+    Check -->|No| Continue[Sesión válida]
+    Check -->|Sí| Expire[Expirada]
+    Continue --> Use
+
+    Expire --> Delete[MongoDB TTL index<br/>auto-deletes document]
+    Delete --> Request[Next request with expired sessionId]
+    Request --> Backend[Backend checks MongoDB]
+    Backend --> NotFound{Session exists?}
+
+    NotFound -->|No| Return410[Return 410 Gone]
+    NotFound -->|Yes| ManualCheck[Check expiresAt manually]
+    ManualCheck --> IsExpired{Expired?}
+
+    IsExpired -->|Yes| DeleteNow[Delete manually]
+    IsExpired -->|No| Valid[Session valid]
+    DeleteNow --> Return410
+    Return410 --> CreateNew[Frontend: Create new session]
+    CreateNew --> SaveLocal[Save to localStorage]
+    Valid --> Continue
+
+    style Create fill:#e1f5e1
+    style Continue fill:#e1f5e1
+    style Return410 fill:#f5e1e1
+    style CreateNew fill:#fff4e1
