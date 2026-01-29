@@ -15,7 +15,6 @@ export interface VoteResponse {
   message?: string;
 }
 
-// API Response types - match backend DTOs
 export interface MostLikedResponse {
   character: {
     id: string;
@@ -49,11 +48,27 @@ export interface LastEvaluatedResponse {
   };
 }
 
-// Combined statistics type for frontend state
+export interface PikachuStatsResponse {
+  character: {
+    name: string;
+    source: string;
+    exists: boolean;
+  };
+  statistics?: {
+    likes: number;
+    dislikes: number;
+    netScore: number;
+    totalVotes: number;
+    firstVoteAt: string;
+    lastVoteAt: string;
+  };
+}
+
 export interface Statistics {
   mostLiked: MostLikedResponse | null;
   mostDisliked: MostDislikedResponse | null;
   lastEvaluated: LastEvaluatedResponse | null;
+  pikachuStats: PikachuStatsResponse | null;
 }
 
 export interface ApiError {

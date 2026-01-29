@@ -3,6 +3,7 @@ import {
   MostLikedResponse,
   MostDislikedResponse,
   LastEvaluatedResponse,
+  PikachuStatsResponse,
   Statistics,
   Vote,
   VoteResponse,
@@ -86,17 +87,23 @@ export const api = {
   },
 
   statistics: {
+    getPikachuStats: () =>
+      fetcher<PikachuStatsResponse>("/statistics/pikachu"),
+
     getAll: async (): Promise<Statistics> => {
-      const [mostLiked, mostDisliked, lastEvaluated] = await Promise.allSettled([
-        fetcher<MostLikedResponse>("/statistics/most-liked"),
-        fetcher<MostDislikedResponse>("/statistics/most-disliked"),
-        fetcher<LastEvaluatedResponse>("/statistics/last-evaluated"),
-      ]);
+      const [mostLiked, mostDisliked, lastEvaluated, pikachuStats] =
+        await Promise.allSettled([
+          fetcher<MostLikedResponse>("/statistics/most-liked"),
+          fetcher<MostDislikedResponse>("/statistics/most-disliked"),
+          fetcher<LastEvaluatedResponse>("/statistics/last-evaluated"),
+          fetcher<PikachuStatsResponse>("/statistics/pikachu"),
+        ]);
 
       return {
         mostLiked: mostLiked.status === "fulfilled" ? mostLiked.value : null,
         mostDisliked: mostDisliked.status === "fulfilled" ? mostDisliked.value : null,
         lastEvaluated: lastEvaluated.status === "fulfilled" ? lastEvaluated.value : null,
+        pikachuStats: pikachuStats.status === "fulfilled" ? pikachuStats.value : null,
       };
     },
   },

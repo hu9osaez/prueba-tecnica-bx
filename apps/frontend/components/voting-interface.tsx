@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { saveVotedCharacterId } from "@/lib/storage";
 import { CharacterCard } from "@/components/character-card";
 import { StatisticsPanel } from "@/components/statistics-panel";
+import { PikachuStatsPanel } from "@/components/pikachu-stats-panel";
 import { VotingButtons } from "@/components/voting-buttons";
 
 export function VotingInterface() {
@@ -101,6 +102,7 @@ export function VotingInterface() {
       </div>
 
       <StatisticsPanel statistics={statistics} isLoading={isLoading} />
+      <PikachuStatsPanel stats={statistics?.pikachuStats ?? null} isLoading={isLoading} />
     </div>
   );
 }
