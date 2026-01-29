@@ -4,7 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 
 import { Character } from "@/types";
-import { Badge, Card, CardContent } from "@/components/ui";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface CharacterCardProps {
   character: Character | null;

@@ -5,7 +5,9 @@ import { AlertCircle } from "lucide-react";
 
 import { Character, Statistics } from "@/types";
 import { api } from "@/lib/api";
-import { CharacterCard, StatisticsPanel, VotingButtons } from "@/components";
+import { CharacterCard } from "@/components/character-card";
+import { StatisticsPanel } from "@/components/statistics-panel";
+import { VotingButtons } from "@/components/voting-buttons";
 
 export function VotingInterface() {
   const [character, setCharacter] = useState<Character | null>(null);

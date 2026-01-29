@@ -18,22 +18,30 @@ export class VotesService {
     characterId: string,
     voteType: 'like' | 'dislike',
   ): Promise<VoteDocument> {
-    const character = await this.charactersService.findById(characterId);
-    if (!character) {
-      throw new NotFoundException('Character not found');
+    try {
+      const character = await this.charactersService.findById(characterId);
+      if (!character) {
+        throw new NotFoundException('Character not found');
+      }
+
+      const vote = new this.voteModel({
+        characterId: new Types.ObjectId(characterId),
+        characterName: character.name,
+        source: character.source,
+        voteType,
+        votedAt: new Date(),
+      });
+
+      const saved = await vote.save();
+      this.logger.log(`Vote created: ${voteType} for ${character.name}`);
+      return saved;
+    } catch (error) {
+      this.logger.error('Error create:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
     }
-
-    const vote = new this.voteModel({
-      characterId: new Types.ObjectId(characterId),
-      characterName: character.name,
-      source: character.source,
-      voteType,
-      votedAt: new Date(),
-    });
-
-    const saved = await vote.save();
-    this.logger.log(`Vote created: ${voteType} for ${character.name}`);
-    return saved;
   }
 
   async createManual(
@@ -41,57 +49,81 @@ export class VotesService {
     source: string,
     voteType: 'like' | 'dislike',
   ): Promise<VoteDocument> {
-    let character = await this.charactersService.findByExternalId(
-      characterName.toLowerCase(),
-      source,
-    );
+    try {
+      let character = await this.charactersService.findByExternalId(
+        characterName.toLowerCase(),
+        source,
+      );
 
-    if (!character) {
-      character = await this.charactersService.createOrUpdate({
-        externalId: characterName.toLowerCase(),
-        name: characterName,
-        source: source as any,
-        imageUrl: '',
+      if (!character) {
+        character = await this.charactersService.createOrUpdate({
+          externalId: characterName.toLowerCase(),
+          name: characterName,
+          source: source as any,
+          imageUrl: '',
+        });
+      }
+
+      const vote = new this.voteModel({
+        characterId: character._id,
+        characterName: character.name,
+        source: character.source,
+        voteType,
+        votedAt: new Date(),
       });
+
+      const saved = await vote.save();
+      this.logger.log(`Manual vote created: ${voteType} for ${characterName}`);
+      return saved;
+    } catch (error) {
+      this.logger.error('Error createManual:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
     }
-
-    const vote = new this.voteModel({
-      characterId: character._id,
-      characterName: character.name,
-      source: character.source,
-      voteType,
-      votedAt: new Date(),
-    });
-
-    const saved = await vote.save();
-    this.logger.log(`Manual vote created: ${voteType} for ${characterName}`);
-    return saved;
   }
 
   async findByCharacter(characterId: string): Promise<VoteDocument[]> {
-    return this.voteModel
-      .find({ characterId: new Types.ObjectId(characterId) })
-      .exec();
+    try {
+      return this.voteModel
+        .find({ characterId: new Types.ObjectId(characterId) })
+        .exec();
+    } catch (error) {
+      this.logger.error('Error findByCharacter:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
+    }
   }
 
   async getVoteCounts(characterId: string): Promise<{
     likes: number;
     dislikes: number;
   }> {
-    const likes = await this.voteModel
-      .countDocuments({
-        characterId: new Types.ObjectId(characterId),
-        voteType: 'like',
-      })
-      .exec();
+    try {
+      const likes = await this.voteModel
+        .countDocuments({
+          characterId: new Types.ObjectId(characterId),
+          voteType: 'like',
+        })
+        .exec();
 
-    const dislikes = await this.voteModel
-      .countDocuments({
-        characterId: new Types.ObjectId(characterId),
-        voteType: 'dislike',
-      })
-      .exec();
+      const dislikes = await this.voteModel
+        .countDocuments({
+          characterId: new Types.ObjectId(characterId),
+          voteType: 'dislike',
+        })
+        .exec();
 
-    return { likes, dislikes };
+      return { likes, dislikes };
+    } catch (error) {
+      this.logger.error('Error getVoteCounts:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
+    }
   }
 }

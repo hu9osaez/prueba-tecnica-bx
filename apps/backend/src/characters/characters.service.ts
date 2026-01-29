@@ -23,46 +23,86 @@ export class CharactersService {
   async createOrUpdate(
     externalCharacter: ExternalCharacter,
   ): Promise<CharacterDocument> {
-    const character = await this.characterModel.findOneAndUpdate(
-      {
-        externalId: externalCharacter.externalId,
-        source: externalCharacter.source,
-      },
-      externalCharacter,
-      { upsert: true, new: true },
-    );
+    try {
+      const character = await this.characterModel.findOneAndUpdate(
+        {
+          externalId: externalCharacter.externalId,
+          source: externalCharacter.source,
+        },
+        externalCharacter,
+        { upsert: true, new: true },
+      );
 
-    this.logger.log(`Character created/updated: ${character.name}`);
-    return character;
+      this.logger.log(`Character created/updated: ${character.name}`);
+      return character;
+    } catch (error) {
+      this.logger.error('Error createOrUpdate:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
+    }
   }
 
   async findById(id: string): Promise<CharacterDocument | null> {
-    return this.characterModel.findById(id).exec();
+    try {
+      return this.characterModel.findById(id).exec();
+    } catch (error) {
+      this.logger.error('Error findById:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
+    }
   }
 
   async findByExternalId(
     externalId: string,
     source: string,
   ): Promise<CharacterDocument | null> {
-    return this.characterModel.findOne({ externalId, source }).exec();
+    try {
+      return this.characterModel.findOne({ externalId, source }).exec();
+    } catch (error) {
+      this.logger.error('Error findByExternalId:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
+    }
   }
 
   async getRandomCharacter(
     source?: 'rick-morty' | 'pokemon' | 'superhero',
   ): Promise<CharacterDocument | null> {
-    const query = source ? { source } : {};
+    try {
+      const query = source ? { source } : {};
 
-    const count = await this.characterModel.countDocuments(query);
+      const count = await this.characterModel.countDocuments(query);
 
-    if (count === 0) {
-      return null;
+      if (count === 0) {
+        return null;
+      }
+
+      const random = Math.floor(Math.random() * count);
+      return this.characterModel.findOne(query).skip(random).exec();
+    } catch (error) {
+      this.logger.error('Error getRandomCharacter:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
     }
-
-    const random = Math.floor(Math.random() * count);
-    return this.characterModel.findOne(query).skip(random).exec();
   }
 
   async findAll(): Promise<CharacterDocument[]> {
-    return this.characterModel.find().exec();
+    try {
+      return this.characterModel.find().exec();
+    } catch (error) {
+      this.logger.error('Error findAll:', {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
+    }
   }
 }

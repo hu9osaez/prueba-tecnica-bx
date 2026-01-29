@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
-import { ErrorBoundary } from "@/components";
+import { ErrorBoundary } from "@/components/error-boundary";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });

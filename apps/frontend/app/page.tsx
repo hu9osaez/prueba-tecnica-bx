@@ -1,4 +1,4 @@
-import { VotingInterface } from "@/components";
+import { VotingInterface } from "@/components/voting-interface";
 
 export default function HomePage() {
   return (
