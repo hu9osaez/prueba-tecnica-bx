@@ -1,9 +1,17 @@
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class GetRandomCharacterDto {
   @IsEnum(['rick-morty', 'pokemon', 'superhero'])
   @IsOptional()
   source?: 'rick-morty' | 'pokemon' | 'superhero';
+
+  @IsString()
+  @IsOptional()
+  excludeIds?: string;
+
+  getExcludeIdsArray(): string[] {
+    return this.excludeIds ? this.excludeIds.split(',').filter(Boolean) : [];
+  }
 }
 
 export interface CharacterResponse {

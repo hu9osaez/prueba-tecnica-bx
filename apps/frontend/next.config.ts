@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { hostname: "rickandmortyapi.com" },
       { hostname: "raw.githubusercontent.com" },
-      { hostname: "superheroapi.com" },
+      { hostname: "www.superherodb.com" },
     ],
   },
   experimental: {

@@ -5,6 +5,7 @@ import { AlertCircle } from "lucide-react";
 
 import { Character, Statistics } from "@/types";
 import { api } from "@/lib/api";
+import { saveVotedCharacterId } from "@/lib/storage";
 import { CharacterCard } from "@/components/character-card";
 import { StatisticsPanel } from "@/components/statistics-panel";
 import { VotingButtons } from "@/components/voting-buttons";
@@ -55,6 +56,9 @@ export function VotingInterface() {
         characterId: character.id,
         voteType,
       });
+
+      // Save voted character ID to localStorage
+      saveVotedCharacterId(character.id);
 
       // Transition animation
       setIsTransitioning(true);

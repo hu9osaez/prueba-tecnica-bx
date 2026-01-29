@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Character, CharacterDocument } from './schemas';
+import { ExternalService } from '../external/external.service';
 
 export interface ExternalCharacter {
   externalId: string;
@@ -14,10 +15,13 @@ export interface ExternalCharacter {
 @Injectable()
 export class CharactersService {
   private readonly logger = new Logger(CharactersService.name);
+  private readonly MIN_CHARACTERS_FOR_CACHE = 10;
+  private readonly EXTERNAL_API_PROBABILITY = 0.3;
 
   constructor(
     @InjectModel(Character.name)
     private characterModel: Model<CharacterDocument>,
+    private readonly externalService: ExternalService,
   ) {}
 
   async createOrUpdate(
@@ -73,18 +77,63 @@ export class CharactersService {
 
   async getRandomCharacter(
     source?: 'rick-morty' | 'pokemon' | 'superhero',
+    excludeIds?: string[],
   ): Promise<CharacterDocument | null> {
     try {
-      const query = source ? { source } : {};
+      const query: Record<string, unknown> = source ? { source } : {};
+
+      if (excludeIds && excludeIds.length > 0) {
+        query._id = { $nin: excludeIds };
+      }
 
       const count = await this.characterModel.countDocuments(query);
 
-      if (count === 0) {
-        return null;
+      // Hybrid strategy: ensure true randomness and variety
+      const shouldFetchFromExternal =
+        count === 0 ||
+        count < this.MIN_CHARACTERS_FOR_CACHE ||
+        Math.random() < this.EXTERNAL_API_PROBABILITY;
+
+      if (shouldFetchFromExternal) {
+        this.logger.log(
+          `Fetching from external API (count: ${count}, source: ${source || 'any'}, excluded: ${excludeIds?.length || 0})`,
+        );
+        const externalCharacter =
+          await this.externalService.getRandomCharacter(source);
+
+        if (excludeIds && excludeIds.length > 0) {
+          const existing = await this.characterModel.findOne({
+            externalId: externalCharacter.externalId,
+            source: externalCharacter.source,
+            _id: { $nin: excludeIds },
+          });
+          if (existing) {
+            return existing;
+          }
+        }
+
+        return this.createOrUpdate(externalCharacter);
       }
 
-      const random = Math.floor(Math.random() * count);
-      return this.characterModel.findOne(query).skip(random).exec();
+      // Use MongoDB aggregate with $sample for true randomness
+      const [character] = await this.characterModel
+        .aggregate<CharacterDocument>([
+          { $match: query },
+          { $sample: { size: 1 } },
+        ])
+        .exec();
+
+      if (!character) {
+        // Fallback to external API if aggregate fails
+        this.logger.warn(
+          'Aggregate returned no results, fetching from external API',
+        );
+        const externalCharacter =
+          await this.externalService.getRandomCharacter(source);
+        return this.createOrUpdate(externalCharacter);
+      }
+
+      return character;
     } catch (error) {
       this.logger.error('Error getRandomCharacter:', {
         error: error.message,

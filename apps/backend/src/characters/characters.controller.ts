@@ -13,6 +13,7 @@ export class CharactersController {
   ): Promise<CharacterResponse> {
     const character = await this.charactersService.getRandomCharacter(
       query.source,
+      query.getExcludeIdsArray(),
     );
 
     if (!character) {

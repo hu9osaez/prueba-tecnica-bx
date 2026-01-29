@@ -7,8 +7,18 @@ import {
   Vote,
   VoteResponse,
 } from "@/types";
+import { buildUrl } from "./utils";
+import { getVotedCharacterIds } from "./storage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+
+interface BackendCharacter {
+  id: string;
+  externalId: string;
+  name: string;
+  source: "rick-morty" | "pokemon" | "superhero";
+  imageUrl: string;
+}
 
 class ApiError extends Error {
   constructor(public message: string, public statusCode?: number) {
@@ -25,11 +35,13 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
         "Content-Type": "application/json",
         ...options?.headers,
       },
-      signal: AbortSignal.timeout(10000), // 10 second timeout
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: "Unknown error" }));
+      const error = await response
+        .json()
+        .catch(() => ({ message: "Unknown error" }));
       throw new ApiError(error.message || "Request failed", response.status);
     }
 
@@ -41,9 +53,28 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
   }
 }
 
+function transformCharacter(backend: BackendCharacter): Character {
+  return {
+    id: backend.id,
+    name: backend.name,
+    image: backend.imageUrl, // Map imageUrl -> image
+    source:
+      backend.source === "rick-morty"
+        ? "rick-and-morty"
+        : backend.source, // Map rick-morty -> rick-and-morty
+  };
+}
+
 export const api = {
   characters: {
-    getRandom: () => fetcher<Character>(`/characters/random`),
+    getRandom: async (): Promise<Character> => {
+      const excludeIds = getVotedCharacterIds();
+      const url = buildUrl("/characters/random", {
+        excludeIds: excludeIds.length > 0 ? excludeIds.join(',') : undefined,
+      });
+      const backendChar = await fetcher<BackendCharacter>(url);
+      return transformCharacter(backendChar);
+    },
   },
 
   votes: {
@@ -55,11 +86,6 @@ export const api = {
   },
 
   statistics: {
-    getMostLiked: () => fetcher<MostLikedResponse>("/statistics/most-liked"),
-    getMostDisliked: () => fetcher<MostDislikedResponse>("/statistics/most-disliked"),
-    getLastEvaluated: () => fetcher<LastEvaluatedResponse>("/statistics/last-evaluated"),
-
-    // Convenience method to fetch all statistics in parallel
     getAll: async (): Promise<Statistics> => {
       const [mostLiked, mostDisliked, lastEvaluated] = await Promise.allSettled([
         fetcher<MostLikedResponse>("/statistics/most-liked"),
