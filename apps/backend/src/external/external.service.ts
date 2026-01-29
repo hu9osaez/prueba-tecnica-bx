@@ -1,14 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { RickAndMortyClient, PokemonClient, SuperheroClient } from './clients';
+import {
+  RickAndMortyClient,
+  PokemonClient,
+  SuperheroClient,
+  StarWarsClient,
+} from './clients';
 import type { InternalCharacter } from './interfaces';
 import { ExternalApiException } from '../common/exceptions';
 
-const SOURCES: Array<'rick-morty' | 'pokemon' | 'superhero'> = [
+const SOURCES: Array<'rick-morty' | 'pokemon' | 'superhero' | 'star-wars'> = [
   'rick-morty',
   'pokemon',
   'superhero',
+  'star-wars',
 ];
 
 interface CacheEntry {
@@ -26,6 +32,7 @@ export class ExternalService {
     private readonly rickAndMortyClient: RickAndMortyClient,
     private readonly pokemonClient: PokemonClient,
     private readonly superheroClient: SuperheroClient,
+    private readonly starWarsClient: StarWarsClient,
     private readonly configService: ConfigService,
   ) {
     this.cacheTtl =
@@ -33,7 +40,7 @@ export class ExternalService {
   }
 
   async getRandomCharacter(
-    source?: 'rick-morty' | 'pokemon' | 'superhero',
+    source?: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
   ): Promise<InternalCharacter> {
     if (source) {
       return this.getFromSource(source);
@@ -76,7 +83,7 @@ export class ExternalService {
   }
 
   async getCharacterById(
-    source: 'rick-morty' | 'pokemon' | 'superhero',
+    source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
     id: string,
   ): Promise<InternalCharacter> {
     this.logger.log(`Fetching character ${id} from ${source}`);
@@ -95,7 +102,7 @@ export class ExternalService {
 
   async getCharacterByName(
     name: string,
-    source: 'rick-morty' | 'pokemon' | 'superhero',
+    source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
   ): Promise<InternalCharacter> {
     this.logger.log(`Fetching character "${name}" from ${source}`);
 
@@ -112,7 +119,7 @@ export class ExternalService {
   }
 
   private getFromSource(
-    source: 'rick-morty' | 'pokemon' | 'superhero',
+    source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
   ): Promise<InternalCharacter> {
     switch (source) {
       case 'rick-morty':
@@ -121,11 +128,13 @@ export class ExternalService {
         return this.pokemonClient.getRandomCharacter();
       case 'superhero':
         return this.superheroClient.getRandomCharacter();
+      case 'star-wars':
+        return this.starWarsClient.getRandomCharacter();
     }
   }
 
   private getFromSourceById(
-    source: 'rick-morty' | 'pokemon' | 'superhero',
+    source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
     id: string,
   ): Promise<InternalCharacter> {
     switch (source) {
@@ -135,11 +144,13 @@ export class ExternalService {
         return this.pokemonClient.getCharacterById(id);
       case 'superhero':
         return this.superheroClient.getCharacterById(id);
+      case 'star-wars':
+        return this.starWarsClient.getCharacterById(id);
     }
   }
 
   private getFromSourceByName(
-    source: 'rick-morty' | 'pokemon' | 'superhero',
+    source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
     name: string,
   ): Promise<InternalCharacter> {
     switch (source) {
@@ -153,10 +164,16 @@ export class ExternalService {
         throw new Error(
           'getCharacterByName not supported for superhero source yet',
         );
+      case 'star-wars':
+        return this.starWarsClient.getCharacterByName(name);
     }
   }
 
-  private selectRandomSource(): 'rick-morty' | 'pokemon' | 'superhero' {
+  private selectRandomSource():
+    | 'rick-morty'
+    | 'pokemon'
+    | 'superhero'
+    | 'star-wars' {
     const randomIndex = Math.floor(Math.random() * SOURCES.length);
     return SOURCES[randomIndex];
   }

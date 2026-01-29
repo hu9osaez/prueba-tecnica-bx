@@ -14,7 +14,7 @@ export class CreateManualVoteDto {
   @IsNotEmpty()
   characterName: string;
 
-  @IsEnum(['rick-morty', 'pokemon', 'superhero'])
+  @IsEnum(['rick-morty', 'pokemon', 'superhero', 'star-wars'])
   source: string;
 
   @IsEnum(['like', 'dislike'])

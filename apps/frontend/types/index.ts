@@ -2,7 +2,7 @@ export interface Character {
   id: string;
   name: string;
   image: string;
-  source: "rick-and-morty" | "pokemon" | "superhero";
+  source: "rick-and-morty" | "pokemon" | "superhero" | "star-wars";
 }
 
 export interface Vote {

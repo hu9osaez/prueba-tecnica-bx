@@ -3,7 +3,12 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 
 import { ExternalService } from './external.service';
-import { RickAndMortyClient, PokemonClient, SuperheroClient } from './clients';
+import {
+  RickAndMortyClient,
+  PokemonClient,
+  SuperheroClient,
+  StarWarsClient,
+} from './clients';
 
 @Module({
   imports: [HttpModule, ConfigModule],
@@ -12,6 +17,7 @@ import { RickAndMortyClient, PokemonClient, SuperheroClient } from './clients';
     RickAndMortyClient,
     PokemonClient,
     SuperheroClient,
+    StarWarsClient,
   ],
   exports: [ExternalService, PokemonClient],
 })

@@ -8,7 +8,7 @@ import { ExternalService } from '../external/external.service';
 export interface ExternalCharacter {
   externalId: string;
   name: string;
-  source: 'rick-morty' | 'pokemon' | 'superhero';
+  source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars' | 'star-wars';
   imageUrl: string;
 }
 
@@ -76,7 +76,7 @@ export class CharactersService {
   }
 
   async getRandomCharacter(
-    source?: 'rick-morty' | 'pokemon' | 'superhero',
+    source?: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
     excludeIds?: string[],
   ): Promise<CharacterDocument | null> {
     try {
@@ -157,7 +157,7 @@ export class CharactersService {
 
   async findOrFetchByName(
     name: string,
-    source: 'rick-morty' | 'pokemon' | 'superhero',
+    source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars',
   ): Promise<CharacterDocument | null> {
     try {
       const existing = await this.characterModel

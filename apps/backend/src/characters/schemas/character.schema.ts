@@ -13,9 +13,9 @@ export class Character {
 
   @Prop({
     required: true,
-    enum: ['rick-morty', 'pokemon', 'superhero'],
+    enum: ['rick-morty', 'pokemon', 'superhero', 'star-wars'],
   })
-  source: 'rick-morty' | 'pokemon' | 'superhero';
+  source: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars';
 
   @Prop({ required: true })
   imageUrl: string;

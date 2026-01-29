@@ -1,9 +1,9 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class GetRandomCharacterDto {
-  @IsEnum(['rick-morty', 'pokemon', 'superhero'])
+  @IsEnum(['rick-morty', 'pokemon', 'superhero', 'star-wars'])
   @IsOptional()
-  source?: 'rick-morty' | 'pokemon' | 'superhero';
+  source?: 'rick-morty' | 'pokemon' | 'superhero' | 'star-wars';
 
   @IsString()
   @IsOptional()

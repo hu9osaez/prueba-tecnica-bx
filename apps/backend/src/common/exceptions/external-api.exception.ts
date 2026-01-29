@@ -55,3 +55,12 @@ export class SuperheroApiException extends ExternalApiException {
     super('superhero', message, status);
   }
 }
+
+export class StarWarsApiException extends ExternalApiException {
+  constructor(
+    message: string,
+    status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+  ) {
+    super('star-wars', message, status);
+  }
+}

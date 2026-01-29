@@ -64,6 +64,10 @@ const config: Config = {
           DEFAULT: "hsl(var(--superhero-bg))",
           text: "hsl(var(--superhero-text))",
         },
+        starwars: {
+          DEFAULT: "hsl(var(--starwars-bg))",
+          text: "hsl(var(--starwars-text))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

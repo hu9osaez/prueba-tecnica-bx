@@ -5,5 +5,6 @@ export {
   RickAndMortyApiException,
   PokemonApiException,
   SuperheroApiException,
+  StarWarsApiException,
 } from './external-api.exception';
 export { CharacterNotFoundException } from './character-not-found.exception';

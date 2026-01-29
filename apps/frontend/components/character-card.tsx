@@ -15,12 +15,14 @@ const sourceBadgeClasses = {
   "rick-and-morty": "bg-rickmorty",
   pokemon: "bg-pokemon",
   superhero: "bg-superhero",
+  "star-wars": "bg-starwars",
 };
 
 const sourceLabels = {
   "rick-and-morty": "Rick and Morty",
   pokemon: "Pokémon",
   superhero: "Superhero",
+  "star-wars": "Star Wars",
 };
 
 export function CharacterCard({ character, isLoading }: CharacterCardProps) {
